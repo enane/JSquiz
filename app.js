@@ -30,6 +30,9 @@ const questions = [
 
 var quizWrapper = document.getElementById('quizWrapper');
 var finishButton = document.getElementById('finishButton');
+var timerWrapper = document.getElementById('timeLeft');
+var startButton = document.getElementById('startButton');
+var timeLeft = 10;
 
 function startQuiz() {
     let quizQuestions = [];
@@ -48,14 +51,16 @@ function startQuiz() {
     quizWrapper.innerHTML = quizQuestions.join('');
 }
 
+function reload() {
+    reload = location.reload();
+}
+
 function finishQuiz() {
     let bodovi = 0;
     questions.forEach((question, questionIndex) => {
         let qName = questionIndex.toString();
-        let pitanje = document.querySelector(`input[name="${qName}"]:checked`);
-        console.log(pitanje)
-        console.log(question.correctAnswer)
-        if (pitanje.value == question.correctAnswer) bodovi++;
+        let pitanje = document.querySelector(`input[name="${qName}"]:checked`)?.value;
+        if (pitanje == question.correctAnswer) bodovi++;
     })
     let qResults = document.getElementById('quizResults');
     let proc = (bodovi/questions.length*100).toFixed(2)
@@ -63,11 +68,42 @@ function finishQuiz() {
                                 <h2>Results</h2>
                                 <p>${bodovi}/${questions.length}</p>
                                 <p>You got ${proc}% of questions right</p>
+                                <button class="btn btn-primary" id="tryAgainButton">Try again</button>
                             </div>`
+    let tryAgainButton = document.getElementById('tryAgainButton')
+    tryAgainButton.addEventListener('click', reload, false)
 }
-
 
 startQuiz();
 finishButton.addEventListener('click', (e) => {
     finishQuiz();
-})
+});
+
+startButton.addEventListener('click', (e)=>{
+    startButton.setAttribute('hidden', '')
+    setTimeout(finishQuiz, 10000);
+    setInterval(() => {
+            if (timeLeft == 0) {
+                timerWrapper.innerHTML = 'Time out!';
+                return;
+            }
+            ;
+            timeLeft--;
+            timerWrapper.innerHTML = timeLeft;
+        }
+        , 1000)
+});
+
+// function startCount() {
+//     setTimeout(finishQuiz, 10000);
+//     setInterval(() => {
+//             if (timeLeft == 0) {
+//                 timerWrapper.innerHTML = 'Time out!';
+//                 return;
+//             }
+//             ;
+//             timeLeft--;
+//             timerWrapper.innerHTML = timeLeft;
+//         }
+//         , 1000)
+// }
